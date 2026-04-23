@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<title>IA a Domicilio — Tu implementador de IA de confianza</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&family=Fraunces:ital,wght@0,400;0,500;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  html, body { margin: 0; padding: 0; background: #F4F0E8; }
+  * { box-sizing: border-box; }
+  #root, html, body { height: 100%; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script>
+// Tweak defaults — the host parses this block and rewrites it to disk on edit.
+window.__TWEAKS = /*EDITMODE-BEGIN*/{
+  "paper": "#F4F0E8",
+  "ink": "#1A1714",
+  "accent": "#C8491E",
+  "serif": "Instrument Serif",
+  "heroHeadlineSize": 132,
+  "heroTagline": "Somos tu implementador de IA de confianza. Auditamos, implementamos y capacitamos a tu equipo — sin tecnicismos y sin humo.",
+  "heroEmphasis": "No te quedes atrás.",
+  "ctaPrimary": "Agenda tu consulta gratis",
+  "showMarquee": true
+}/*EDITMODE-END*/;
+</script>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+<script type="text/babel" src="dir1-editorial.jsx"></script>
+
+<script type="text/babel">
+  const T0 = window.__TWEAKS;
+
+  function TweaksPanel({ tweaks, setTweaks, onClose }) {
+    const row = { display: 'grid', gridTemplateColumns: '110px 1fr', gap: 12, alignItems: 'center', marginBottom: 12 };
+    const labelS = { fontSize: 11, color: '#8a8680', letterSpacing: 0.5, textTransform: 'uppercase', fontFamily: 'JetBrains Mono, monospace' };
+    const inputS = { padding: '6px 8px', border: '1px solid rgba(0,0,0,0.15)', borderRadius: 4, background: '#fff', fontFamily: 'Inter Tight, system-ui', fontSize: 13 };
+    const set = (k) => (v) => setTweaks({ ...tweaks, [k]: v });
+    return (
+      <div style={{
+        position: 'fixed', bottom: 20, right: 20, zIndex: 9999,
+        width: 340, background: 'rgba(255,255,255,0.97)', backdropFilter: 'blur(8px)',
+        border: '1px solid rgba(0,0,0,0.1)', borderRadius: 10,
+        boxShadow: '0 20px 60px rgba(0,0,0,0.15), 0 2px 8px rgba(0,0,0,0.08)',
+        padding: 18, fontFamily: 'Inter Tight, system-ui', color: '#1A1714',
+      }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16, paddingBottom: 12, borderBottom: '1px solid rgba(0,0,0,0.08)' }}>
+          <div style={{ fontFamily: 'Instrument Serif, serif', fontSize: 22 }}>Tweaks</div>
+          <button onClick={onClose} style={{ background: 'transparent', border: 'none', fontSize: 20, cursor: 'pointer', color: '#6a615a', lineHeight: 1 }}>×</button>
+        </div>
+
+        <div style={{ ...labelS, marginBottom: 8 }}>◦ Color</div>
+        <div style={row}>
+          <span style={{ fontSize: 12 }}>Papel</span>
+          <input type="color" value={tweaks.paper} onChange={(e) => set('paper')(e.target.value)} style={{ width: '100%', height: 28, border: 'none', cursor: 'pointer' }} />
+        </div>
+        <div style={row}>
+          <span style={{ fontSize: 12 }}>Tinta</span>
+          <input type="color" value={tweaks.ink} onChange={(e) => set('ink')(e.target.value)} style={{ width: '100%', height: 28, border: 'none', cursor: 'pointer' }} />
+        </div>
+        <div style={row}>
+          <span style={{ fontSize: 12 }}>Acento</span>
+          <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
+            <input type="color" value={tweaks.accent} onChange={(e) => set('accent')(e.target.value)} style={{ width: 36, height: 28, border: 'none', cursor: 'pointer' }} />
+            <div style={{ display: 'flex', gap: 4 }}>
+              {['#C8491E', '#1F5C47', '#7A3B2E', '#1A1714', '#3B5BDB'].map((c) => (
+                <button key={c} onClick={() => set('accent')(c)} style={{ width: 20, height: 20, border: tweaks.accent === c ? '2px solid #1A1714' : '1px solid rgba(0,0,0,0.2)', borderRadius: '50%', background: c, cursor: 'pointer', padding: 0 }} />
+              ))}
+            </div>
+          </div>
+        </div>
+
+        <div style={{ ...labelS, margin: '18px 0 8px' }}>◦ Tipografía display</div>
+        <div style={row}>
+          <span style={{ fontSize: 12 }}>Fuente serif</span>
+          <select value={tweaks.serif} onChange={(e) => set('serif')(e.target.value)} style={inputS}>
+            <option>Instrument Serif</option>
+            <option>Fraunces</option>
+            <option>Georgia</option>
+          </select>
+        </div>
+        <div style={row}>
+          <span style={{ fontSize: 12 }}>Tamaño título</span>
+          <input type="range" min="80" max="180" value={tweaks.heroHeadlineSize} onChange={(e) => set('heroHeadlineSize')(+e.target.value)} />
+        </div>
+
+        <div style={{ ...labelS, margin: '18px 0 8px' }}>◦ Copy del hero</div>
+        <div style={{ marginBottom: 10 }}>
+          <div style={{ fontSize: 11, color: '#6a615a', marginBottom: 4 }}>Descripción</div>
+          <textarea value={tweaks.heroTagline} onChange={(e) => set('heroTagline')(e.target.value)} style={{ ...inputS, width: '100%', minHeight: 64, resize: 'vertical', fontFamily: 'Inter Tight, system-ui' }} />
+        </div>
+        <div style={{ marginBottom: 10 }}>
+          <div style={{ fontSize: 11, color: '#6a615a', marginBottom: 4 }}>Énfasis (acento)</div>
+          <input value={tweaks.heroEmphasis} onChange={(e) => set('heroEmphasis')(e.target.value)} style={{ ...inputS, width: '100%' }} />
+        </div>
+        <div style={{ marginBottom: 10 }}>
+          <div style={{ fontSize: 11, color: '#6a615a', marginBottom: 4 }}>Texto del CTA</div>
+          <input value={tweaks.ctaPrimary} onChange={(e) => set('ctaPrimary')(e.target.value)} style={{ ...inputS, width: '100%' }} />
+        </div>
+
+        <div style={{ ...labelS, margin: '14px 0 8px' }}>◦ Secciones</div>
+        <label style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, cursor: 'pointer' }}>
+          <input type="checkbox" checked={tweaks.showMarquee} onChange={(e) => set('showMarquee')(e.target.checked)} />
+          Mostrar marquesina de servicios
+        </label>
+      </div>
+    );
+  }
+
+  function App() {
+    const [tweaks, setTweaks] = React.useState(T0);
+    const [showPanel, setShowPanel] = React.useState(false);
+
+    // Register listener FIRST, then announce.
+    React.useEffect(() => {
+      const onMsg = (e) => {
+        if (!e.data || typeof e.data !== 'object') return;
+        if (e.data.type === '__activate_edit_mode') setShowPanel(true);
+        if (e.data.type === '__deactivate_edit_mode') setShowPanel(false);
+      };
+      window.addEventListener('message', onMsg);
+      window.parent.postMessage({ type: '__edit_mode_available' }, '*');
+      return () => window.removeEventListener('message', onMsg);
+    }, []);
+
+    // Persist on change — debounced.
+    const firstRender = React.useRef(true);
+    React.useEffect(() => {
+      if (firstRender.current) { firstRender.current = false; return; }
+      const t = setTimeout(() => {
+        window.parent.postMessage({ type: '__edit_mode_set_keys', edits: tweaks }, '*');
+      }, 400);
+      return () => clearTimeout(t);
+    }, [tweaks]);
+
+    return (
+      <div style={{ height: '100vh', overflow: 'hidden' }}>
+        <Dir1Editorial tweaks={tweaks} />
+        {showPanel && <TweaksPanel tweaks={tweaks} setTweaks={setTweaks} onClose={() => setShowPanel(false)} />}
+      </div>
+    );
+  }
+
+  const root = ReactDOM.createRoot(document.getElementById('root'));
+  root.render(<App />);
+</script>
+</body>
+</html>
