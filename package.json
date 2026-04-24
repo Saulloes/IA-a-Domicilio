@@ -17,10 +17,6 @@
     "react-dom": "18.3.1",
     "resend": "^4.0.0"
   },
-  "devDependencies": {
-    "eslint": "9.12.0",
-    "eslint-config-next": "14.2.15"
-  },
   "engines": {
     "node": ">=20"
   }
