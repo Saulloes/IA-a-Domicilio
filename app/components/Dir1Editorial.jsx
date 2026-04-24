@@ -1,6 +1,11 @@
+'use client';
+
 // Direction A — Editorial Warm (single-page landing)
 // Cream paper, terracotta accent, Instrument Serif + Inter Tight.
-// Single-page: Hero → Servicios → Cómo trabajamos → Casos → FAQ → Contacto.
+// Single-page: Hero → Servicios → Cómo trabajamos → Diagnóstico teaser → Casos → FAQ → Contacto.
+
+import { useEffect, useRef, useState } from 'react';
+import DiagnosticoPopup from './DiagnosticoPopup';
 
 const EDSTYLE = {
   paper: 'var(--ed-paper, #F4F0E8)',
@@ -18,8 +23,9 @@ const EDSTYLE = {
 // Single breakpoint — phone (<768) vs. everything else.
 function useIsMobile() {
   const get = () => typeof window !== 'undefined' && window.innerWidth < 768;
-  const [isMobile, setIsMobile] = React.useState(get);
-  React.useEffect(() => {
+  const [isMobile, setIsMobile] = useState(false); // SSR-safe default
+  useEffect(() => {
+    setIsMobile(get());
     const onResize = () => setIsMobile(get());
     window.addEventListener('resize', onResize);
     return () => window.removeEventListener('resize', onResize);
@@ -30,6 +36,13 @@ function useIsMobile() {
 // Desktop / mobile shorthand helper.
 const pick = (isMobile, desktop, mobile) => (isMobile ? mobile : desktop);
 
+// Lightweight analytics wrapper — no-op if GA4 hasn't loaded yet.
+const track = (event, props) => {
+  if (typeof window !== 'undefined' && typeof window.gtag === 'function') {
+    window.gtag('event', event, props || {});
+  }
+};
+
 function EdNav({ isMobile }) {
   return (
     <div style={{
@@ -39,16 +52,17 @@ function EdNav({ isMobile }) {
       padding: pick(isMobile, '18px 40px', '14px 20px'),
       fontFamily: EDSTYLE.sans, fontSize: 14,
     }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+      <a href="/" style={{ display: 'flex', alignItems: 'center', gap: 10, textDecoration: 'none', color: EDSTYLE.ink }}>
         <div style={{ width: pick(isMobile, 22, 18), height: pick(isMobile, 22, 18), borderRadius: '50%', background: EDSTYLE.accent }} />
         <span style={{ fontFamily: EDSTYLE.serif, fontSize: pick(isMobile, 22, 19), letterSpacing: -0.3, color: EDSTYLE.ink }}>
           IA a Domicilio
         </span>
-      </div>
+      </a>
       {!isMobile && (
         <nav style={{ display: 'flex', gap: 32, color: EDSTYLE.ink }}>
           <a href="#servicios" style={{ color: 'inherit', textDecoration: 'none' }}>Servicios</a>
           <a href="#proceso" style={{ color: 'inherit', textDecoration: 'none' }}>Cómo trabajamos</a>
+          <a href="/diagnostico" style={{ color: 'inherit', textDecoration: 'none' }}>Diagnóstico</a>
           <a href="#casos" style={{ color: 'inherit', textDecoration: 'none' }}>Casos</a>
           <a href="#contacto" style={{ color: 'inherit', textDecoration: 'none' }}>Contacto</a>
         </nav>
@@ -111,7 +125,7 @@ function EdHero({ scroll, tweaks = {}, isMobile }) {
             30 minutos contigo.<br/>
             <span style={{ fontStyle: 'italic', color: EDSTYLE.accent }}>Sales con un plan.</span>
           </div>
-          <a href="#contacto" style={{
+          <a href="#contacto" onClick={() => track('cta_clicked_call', { source: 'hero' })} style={{
             display: 'flex', alignItems: 'center', justifyContent: 'space-between',
             background: EDSTYLE.accent, color: EDSTYLE.paper, textDecoration: 'none',
             padding: '16px 22px', fontFamily: EDSTYLE.sans, fontSize: pick(isMobile, 16, 15),
@@ -257,38 +271,79 @@ function EdProcess({ isMobile }) {
   );
 }
 
+// NEW: Teaser section inserted between Proceso and Casos, pointing to /diagnostico.
+function EdDiagnosticoTeaser({ isMobile }) {
+  return (
+    <section id="diagnostico-teaser" style={{
+      padding: pick(isMobile, '140px 40px', '88px 20px'),
+      background: EDSTYLE.paperDeep,
+      borderBottom: `1px solid ${EDSTYLE.rule}`,
+    }}>
+      <div style={{ display: 'grid', gridTemplateColumns: pick(isMobile, '220px 1fr', '1fr'), gap: pick(isMobile, 60, 20) }}>
+        <div style={{ fontFamily: EDSTYLE.mono, fontSize: 11, letterSpacing: 2, textTransform: 'uppercase', color: EDSTYLE.inkDim, paddingTop: pick(isMobile, 18, 0) }}>§ ¿Por dónde empezar?</div>
+        <div>
+          <h2 style={{
+            fontFamily: EDSTYLE.serif, fontSize: pick(isMobile, 72, 38),
+            lineHeight: 1.02, letterSpacing: pick(isMobile, -1.5, -0.8),
+            margin: 0, color: EDSTYLE.ink, fontWeight: 400, maxWidth: 960,
+          }}>
+            Antes de cambiar algo, entiende <span style={{ fontStyle: 'italic', color: EDSTYLE.accent }}>dónde estás.</span>
+          </h2>
+          <p style={{
+            fontFamily: EDSTYLE.sans, fontSize: pick(isMobile, 19, 16),
+            lineHeight: 1.55, color: EDSTYLE.ink, margin: pick(isMobile, '36px 0 48px', '24px 0 32px'),
+            maxWidth: 680,
+          }}>
+            Un diagnóstico de 5 minutos te dice qué tan listo está tu negocio para la IA y qué oportunidades tienen más sentido. Sin registro, sin humo.
+          </p>
+          <div style={{ display: 'flex', gap: pick(isMobile, 28, 20), alignItems: 'center', flexWrap: 'wrap' }}>
+            <a
+              href="/diagnostico"
+              onClick={() => track('cta_clicked_quiz', { source: 'homepage_teaser' })}
+              style={{
+                background: EDSTYLE.accent, color: EDSTYLE.paper, textDecoration: 'none',
+                padding: pick(isMobile, '18px 26px', '14px 20px'),
+                fontFamily: EDSTYLE.sans, fontSize: pick(isMobile, 16, 15), fontWeight: 500,
+                borderRadius: 2, display: 'inline-flex', alignItems: 'center', gap: 10,
+              }}
+            >
+              Hacer el diagnóstico
+              <span style={{ fontSize: 20 }}>→</span>
+            </a>
+            <a
+              href="#contacto"
+              onClick={() => track('cta_clicked_call', { source: 'homepage_teaser' })}
+              style={{
+                fontFamily: EDSTYLE.sans, fontSize: pick(isMobile, 15, 14), color: EDSTYLE.ink, textDecoration: 'underline',
+                textUnderlineOffset: 4, textDecorationColor: 'rgba(26,23,20,0.3)',
+              }}
+            >
+              o agenda una llamada →
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 function EdCases({ isMobile }) {
-  // Card grid — three editorial boxes that match the rest of the site:
-  // cream paper, thin ruled borders, accent hairline on top, serif metric as the
-  // visual anchor. No shadows, no heavy fills — just typography and rules.
   const cases = [
     {
-      n: '01',
-      tag: 'Chatbot de ventas',
-      co: 'Distribuidora industrial',
-      loc: 'Guadalajara',
-      metric: '+38%',
-      metricLabel: 'leads calificados',
+      n: '01', tag: 'Chatbot de ventas', co: 'Distribuidora industrial', loc: 'Guadalajara',
+      metric: '+38%', metricLabel: 'leads calificados',
       reto: 'Perdían consultas fuera de horario y el equipo comercial no daba abasto para calificar.',
       resultado: 'Atención 24/7 en WhatsApp con canalización automática al asesor correcto.',
     },
     {
-      n: '02',
-      tag: 'Agente de voz · soporte',
-      co: 'Aseguradora regional',
-      loc: 'Zona Occidente',
-      metric: '−62%',
-      metricLabel: 'tiempo de espera',
+      n: '02', tag: 'Agente de voz · soporte', co: 'Aseguradora regional', loc: 'Zona Occidente',
+      metric: '−62%', metricLabel: 'tiempo de espera',
       reto: 'Líneas saturadas en horas pico; reclamos repetidos colapsaban al equipo humano.',
       resultado: 'Agente de voz para primer nivel; escala lo complejo con contexto.',
     },
     {
-      n: '03',
-      tag: 'Capacitación a líderes',
-      co: 'Grupo restaurantero',
-      loc: '14 sucursales',
-      metric: '14/14',
-      metricLabel: 'gerentes operando con IA',
+      n: '03', tag: 'Capacitación a líderes', co: 'Grupo restaurantero', loc: '14 sucursales',
+      metric: '14/14', metricLabel: 'gerentes operando con IA',
       reto: 'Gerencia sin criterio para decidir qué herramienta usar ni cómo evaluar resultados.',
       resultado: 'Cuatro talleres y playbooks por área para mantener el ritmo.',
     },
@@ -320,7 +375,6 @@ function EdCases({ isMobile }) {
             padding: pick(isMobile, '32px 28px 28px', '28px 22px 24px'),
             display: 'flex', flexDirection: 'column',
           }}>
-            {/* Label row */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: pick(isMobile, 28, 22) }}>
               <span style={{ fontFamily: EDSTYLE.mono, fontSize: 10, letterSpacing: 2, color: EDSTYLE.inkDim }}>
                 Caso {c.n}
@@ -330,7 +384,6 @@ function EdCases({ isMobile }) {
               </span>
             </div>
 
-            {/* Metric — the visual anchor */}
             <div style={{
               fontFamily: EDSTYLE.serif, fontSize: pick(isMobile, 84, 72),
               lineHeight: 0.9, color: EDSTYLE.ink, letterSpacing: -2.5, fontWeight: 400,
@@ -341,10 +394,8 @@ function EdCases({ isMobile }) {
               {c.metricLabel}
             </div>
 
-            {/* Divider */}
             <div style={{ borderTop: `1px solid ${EDSTYLE.rule}`, margin: pick(isMobile, '28px 0 20px', '22px 0 16px') }} />
 
-            {/* Company */}
             <div style={{ fontFamily: EDSTYLE.serif, fontSize: pick(isMobile, 26, 22), lineHeight: 1.15, color: EDSTYLE.ink, letterSpacing: -0.4 }}>
               {c.co}
             </div>
@@ -352,7 +403,6 @@ function EdCases({ isMobile }) {
               {c.loc}
             </div>
 
-            {/* Reto + solución — same typographic treatment, accent label differentiates */}
             <div style={{ marginBottom: pick(isMobile, 20, 16) }}>
               <div style={{ fontFamily: EDSTYLE.mono, fontSize: 10, letterSpacing: 2, textTransform: 'uppercase', color: EDSTYLE.inkDim, marginBottom: 6 }}>El reto</div>
               <p style={{ fontFamily: EDSTYLE.sans, fontSize: pick(isMobile, 15, 14), lineHeight: 1.55, color: EDSTYLE.ink, margin: 0 }}>
@@ -420,6 +470,9 @@ function EdFAQ({ isMobile }) {
 }
 
 const CAL_LINK = 'https://cal.com/saul-lopez/30min';
+const CONTACT_EMAIL = 'saul@iaadomicilio.com';
+const WHATSAPP_NUMBER = '+52 229 850 3858';
+const WHATSAPP_LINK = '5212298503858';
 
 function EdCalBooking({ isMobile }) {
   return (
@@ -435,13 +488,19 @@ function EdCalBooking({ isMobile }) {
       <div style={{ fontFamily: EDSTYLE.serif, fontSize: pick(isMobile, 40, 30), lineHeight: 1.1, letterSpacing: -0.6 }}>
         Elige el día y la hora. <span style={{ fontStyle: 'italic', color: EDSTYLE.accent }}>Así de fácil.</span>
       </div>
-      <a href={CAL_LINK} target="_blank" rel="noopener" style={{
-        background: EDSTYLE.accent, color: EDSTYLE.paper, border: 'none',
-        padding: pick(isMobile, '18px 24px', '16px 20px'),
-        fontFamily: EDSTYLE.sans, fontSize: pick(isMobile, 16, 15), fontWeight: 500,
-        cursor: 'pointer', borderRadius: 2, textDecoration: 'none',
-        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-      }}>
+      <a
+        href={CAL_LINK}
+        target="_blank"
+        rel="noopener noreferrer"
+        onClick={() => track('cta_clicked_call', { source: 'contact_cal_card' })}
+        style={{
+          background: EDSTYLE.accent, color: EDSTYLE.paper, border: 'none',
+          padding: pick(isMobile, '18px 24px', '16px 20px'),
+          fontFamily: EDSTYLE.sans, fontSize: pick(isMobile, 16, 15), fontWeight: 500,
+          cursor: 'pointer', borderRadius: 2, textDecoration: 'none',
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+        }}
+      >
         Ver calendario y reservar
         <span style={{ fontSize: 20 }}>→</span>
       </a>
@@ -477,13 +536,19 @@ function EdCTA({ isMobile }) {
             Sin presentación de ventas. Te escuchamos, te decimos qué haríamos nosotros, y decidimos si tiene sentido trabajar juntos.
           </p>
 
-          <a href={`https://wa.me/5212298503858?text=${waMsg}`} target="_blank" rel="noopener" style={{
-            background: EDSTYLE.accent, color: EDSTYLE.paper, textDecoration: 'none',
-            padding: pick(isMobile, '20px 26px', '16px 20px'),
-            fontFamily: EDSTYLE.sans, fontSize: pick(isMobile, 17, 15), fontWeight: 500,
-            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-            borderRadius: 2, marginBottom: pick(isMobile, 28, 22),
-          }}>
+          <a
+            href={`https://wa.me/${WHATSAPP_LINK}?text=${waMsg}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={() => track('cta_clicked_whatsapp', { source: 'contact_section' })}
+            style={{
+              background: EDSTYLE.accent, color: EDSTYLE.paper, textDecoration: 'none',
+              padding: pick(isMobile, '20px 26px', '16px 20px'),
+              fontFamily: EDSTYLE.sans, fontSize: pick(isMobile, 17, 15), fontWeight: 500,
+              display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+              borderRadius: 2, marginBottom: pick(isMobile, 28, 22),
+            }}
+          >
             {pick(isMobile, 'Escríbenos por WhatsApp — lo más rápido', 'WhatsApp — lo más rápido')}
             <span style={{ fontSize: 22 }}>→</span>
           </a>
@@ -491,11 +556,11 @@ function EdCTA({ isMobile }) {
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10, fontFamily: EDSTYLE.sans, fontSize: pick(isMobile, 14, 13), opacity: 0.75 }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', paddingBottom: 10, borderBottom: '1px solid rgba(244,240,232,0.12)' }}>
               <span style={{ opacity: 0.7 }}>Teléfono / WhatsApp</span>
-              <a href="tel:+5212298503858" style={{ color: EDSTYLE.paper, textDecoration: 'none' }}>+52 229 850 3858</a>
+              <a href={`tel:+52${WHATSAPP_LINK.slice(3)}`} style={{ color: EDSTYLE.paper, textDecoration: 'none' }}>{WHATSAPP_NUMBER}</a>
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between', paddingBottom: 10, borderBottom: '1px solid rgba(244,240,232,0.12)', gap: 16 }}>
               <span style={{ opacity: 0.7 }}>Email</span>
-              <a href="mailto:Saul.lo.es@outlook.com" style={{ color: EDSTYLE.paper, textDecoration: 'none', wordBreak: 'break-all', textAlign: 'right' }}>Saul.lo.es@outlook.com</a>
+              <a href={`mailto:${CONTACT_EMAIL}`} style={{ color: EDSTYLE.paper, textDecoration: 'none', wordBreak: 'break-all', textAlign: 'right' }}>{CONTACT_EMAIL}</a>
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
               <span style={{ opacity: 0.7 }}>Base</span>
@@ -527,16 +592,16 @@ function EdFooter({ isMobile }) {
         <span style={{ fontFamily: EDSTYLE.serif, fontSize: 20, color: EDSTYLE.paper }}>IA a Domicilio</span>
       </div>
       <div>Guadalajara, Jalisco · MX</div>
-      <a href="mailto:Saul.lo.es@outlook.com" style={{ color: 'inherit', textDecoration: 'none', wordBreak: 'break-all' }}>Saul.lo.es@outlook.com</a>
-      <a href="tel:+5212298503858" style={{ color: 'inherit', textDecoration: 'none' }}>+52 229 850 3858</a>
+      <a href={`mailto:${CONTACT_EMAIL}`} style={{ color: 'inherit', textDecoration: 'none', wordBreak: 'break-all' }}>{CONTACT_EMAIL}</a>
+      <a href={`tel:+52${WHATSAPP_LINK.slice(3)}`} style={{ color: 'inherit', textDecoration: 'none' }}>{WHATSAPP_NUMBER}</a>
       <div style={{ fontFamily: EDSTYLE.mono, fontSize: 11 }}>MMXXVI</div>
     </footer>
   );
 }
 
-function Dir1Editorial({ tweaks = {} }) {
-  const scrollRef = React.useRef(null);
-  const [scroll, setScroll] = React.useState(0);
+export default function Dir1Editorial({ tweaks = {} }) {
+  const scrollRef = useRef(null);
+  const [scroll, setScroll] = useState(0);
   const isMobile = useIsMobile();
   const cssVars = {
     '--ed-paper': tweaks.paper || '#F4F0E8',
@@ -545,12 +610,16 @@ function Dir1Editorial({ tweaks = {} }) {
     '--ed-serif': tweaks.serif ? `"${tweaks.serif}"` : '"Instrument Serif"',
   };
   return (
-    <div ref={scrollRef}
+    <div
+      ref={scrollRef}
+      data-ed-scroll
       onScroll={(e) => setScroll(e.currentTarget.scrollTop)}
-      style={{ width: '100%', height: '100%', overflowY: 'auto', overflowX: 'hidden',
+      style={{
+        width: '100%', height: '100vh', overflowY: 'auto', overflowX: 'hidden',
         background: EDSTYLE.paper, color: EDSTYLE.ink, fontFamily: EDSTYLE.sans,
         ...cssVars,
-      }}>
+      }}
+    >
       <style>{`
         @keyframes ed-scroll { from { transform: translateX(0); } to { transform: translateX(-33.33%); } }
       `}</style>
@@ -560,12 +629,12 @@ function Dir1Editorial({ tweaks = {} }) {
       <EdPitch isMobile={isMobile} />
       <EdServices isMobile={isMobile} />
       <EdProcess isMobile={isMobile} />
+      <EdDiagnosticoTeaser isMobile={isMobile} />
       <EdCases isMobile={isMobile} />
       <EdFAQ isMobile={isMobile} />
       <EdCTA isMobile={isMobile} />
       <EdFooter isMobile={isMobile} />
+      <DiagnosticoPopup />
     </div>
   );
 }
-
-window.Dir1Editorial = Dir1Editorial;
