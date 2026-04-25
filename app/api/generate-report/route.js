@@ -100,7 +100,7 @@ export async function POST(req) {
     if (!apiKey) throw new Error('Missing GOOGLE_AI_API_KEY');
     const genAI = new GoogleGenerativeAI(apiKey);
     const model = genAI.getGenerativeModel({
-      model: 'gemini-2.0-flash',
+      model: 'gemini-2.5-flash',
       systemInstruction: SYSTEM_PROMPT,
       generationConfig: { temperature: 0.6, maxOutputTokens: 1500 },
     });
