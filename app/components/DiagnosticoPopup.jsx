@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 
 const STORAGE_KEY = 'diagnostico_popup_dismissed';
-const SCROLL_THRESHOLD = 0.6; // 60% of page
+const SCROLL_THRESHOLD = 0.6;
 const TIME_THRESHOLD_MS = 45_000;
 const MIN_HEIGHT_MOBILE = 700;
 
@@ -28,14 +28,10 @@ export default function DiagnosticoPopup() {
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
-    // Never show on /diagnostico itself.
     if (typeof window === 'undefined') return;
     if (window.location.pathname.startsWith('/diagnostico')) return;
-
-    // Never show if already dismissed this session.
     if (sessionStorage.getItem(STORAGE_KEY)) return;
 
-    // Never show on short mobile viewports (don't crowd them).
     const isShortMobile = window.innerWidth < 768 && window.innerHeight < MIN_HEIGHT_MOBILE;
     if (isShortMobile) return;
 
@@ -47,12 +43,9 @@ export default function DiagnosticoPopup() {
       track('popup_shown');
     };
 
-    // Timer trigger.
     const timer = setTimeout(show, TIME_THRESHOLD_MS);
 
-    // Scroll trigger.
     const onScroll = () => {
-      // Work on either window scroll or the Dir1Editorial inner scroll container.
       const winH = window.innerHeight;
       const docH = document.documentElement.scrollHeight;
       const winScroll = window.scrollY || window.pageYOffset || 0;
@@ -93,15 +86,15 @@ export default function DiagnosticoPopup() {
       aria-label="Diagnóstico IA"
       style={{
         position: 'fixed',
-        bottom: 20,
-        right: 20,
+        bottom: 24,
+        right: 24,
         zIndex: 1000,
-        width: 'min(340px, calc(100vw - 40px))',
+        width: 'min(440px, calc(100vw - 48px))',
         background: S.paper,
         border: `1px solid ${S.rule}`,
-        borderTop: `2px solid ${S.accent}`,
-        boxShadow: '0 20px 60px rgba(0,0,0,0.15)',
-        padding: 24,
+        borderTop: `3px solid ${S.accent}`,
+        boxShadow: '0 24px 70px rgba(0,0,0,0.18)',
+        padding: '28px 32px',
         fontFamily: S.sans,
         color: S.ink,
         animation: 'ed-popup-in 320ms ease-out',
@@ -131,13 +124,13 @@ export default function DiagnosticoPopup() {
       >
         ×
       </button>
-      <div style={{ fontFamily: S.mono, fontSize: 10, letterSpacing: 2, textTransform: 'uppercase', color: S.inkDim, marginBottom: 10 }}>
+      <div style={{ fontFamily: S.mono, fontSize: 11, letterSpacing: 2, textTransform: 'uppercase', color: S.inkDim, marginBottom: 14 }}>
         ◦ Antes de irte
       </div>
-      <div style={{ fontFamily: S.serif, fontSize: 22, lineHeight: 1.15, letterSpacing: -0.3, marginBottom: 10 }}>
+      <div style={{ fontFamily: S.serif, fontSize: 28, lineHeight: 1.1, letterSpacing: -0.5, marginBottom: 12 }}>
         ¿Qué tan listo está tu negocio para la <span style={{ fontStyle: 'italic', color: S.accent }}>IA?</span>
       </div>
-      <div style={{ fontSize: 14, lineHeight: 1.5, color: S.inkDim, marginBottom: 18 }}>
+      <div style={{ fontSize: 15, lineHeight: 1.5, color: S.inkDim, marginBottom: 22 }}>
         5 minutos. Sin registro. Sabrás exactamente por dónde empezar.
       </div>
       <a
@@ -150,9 +143,9 @@ export default function DiagnosticoPopup() {
           background: S.accent,
           color: S.paper,
           textDecoration: 'none',
-          padding: '12px 16px',
+          padding: '14px 18px',
           borderRadius: 2,
-          fontSize: 15,
+          fontSize: 16,
           fontWeight: 500,
         }}
       >
