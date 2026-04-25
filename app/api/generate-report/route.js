@@ -135,7 +135,7 @@ export async function POST(req) {
       bcc: BCC,
       subject,
       html,
-      reply_to: CONTACT_EMAIL,
+      replyTo: CONTACT_EMAIL,
     });
     if (sendErr) throw sendErr;
   } catch (err) {
