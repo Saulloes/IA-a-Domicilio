@@ -126,19 +126,19 @@ export const QUESTIONS = [
 
 export const ARCHETYPES = [
   {
-    min: 0, max: 25, emoji: '🌱', name: 'AI Curioso',
+    min: 0, max: 25, emoji: '🌱', name: 'IA Curioso',
     tagline: 'Estás escuchando de IA, pero no sabes por dónde empezar. Buenas noticias: estás justo donde necesitas estar para dar un salto importante.',
   },
   {
-    min: 26, max: 50, emoji: '🧭', name: 'AI Explorador',
+    min: 26, max: 50, emoji: '🧭', name: 'IA Explorador',
     tagline: 'Ya jugaste con IA, pero de forma desordenada. Hay 10x más valor esperándote si lo haces con método.',
   },
   {
-    min: 51, max: 75, emoji: '🚀', name: 'AI Adoptador',
+    min: 51, max: 75, emoji: '🚀', name: 'IA Adoptador',
     tagline: 'Ya tienes IA en algún proceso. Es momento de escalar, conectar y sistematizar lo que funciona.',
   },
   {
-    min: 76, max: 100, emoji: '⚡', name: 'AI Estratega',
+    min: 76, max: 100, emoji: '⚡', name: 'IA Estratega',
     tagline: 'Estás adelantado al 90% de las PyMEs de México. Tu siguiente paso no son tutoriales — son implementaciones a la medida.',
   },
 ];
